@@ -2,6 +2,7 @@ const http = require("http");
 const fs = require("fs").promises;
 
 const users = {}; // 데이터 저장용
+const posts = {}; // 데이터 저장용
 
 http
   .createServer(async (req, res) => {
@@ -24,6 +25,11 @@ http
           const data = await fs.readFile("./profile.html");
           res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
           return res.end(data);
+        } else if (req.url === "/posts") {
+          res.writeHead(200, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          return res.end(JSON.stringify(posts));
         }
         // /도 /about도 /users도 아니면
         try {
@@ -46,7 +52,21 @@ http
             const id = Date.now();
             users[id] = name;
             res.writeHead(201, { "Content-Type": "text/plain; charset=utf-8" });
-            console.log(req, "req");
+            res.end("ok");
+          });
+        }
+        if (req.url === "/post") {
+          let body = "";
+          req.on("data", (data) => {
+            body += data;
+          });
+
+          return req.on("end", () => {
+            console.log("post 바디", body);
+            const { name } = JSON.parse(body);
+            const id = Date.now();
+            posts[id] = name;
+            res.writeHead(201, { "content-Type": "text/plain; charset=utf-8" });
             res.end("ok");
           });
         }
@@ -64,10 +84,29 @@ http
             return res.end("ok");
           });
         }
+        if (req.url.startsWith("/post/")) {
+          console.log(req.url);
+          const key = req.url.split("/")[2];
+          let body = "";
+          req.on("data", (data) => {
+            body += data;
+          });
+          return req.on("end", () => {
+            posts[key] = JSON.parse(body).name;
+            res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+            return res.end("ok");
+          });
+        }
       } else if (req.method === "DELETE") {
         if (req.url.startsWith("/user/")) {
           const key = req.url.split("/")[2];
           delete users[key];
+          res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+          return res.end("ok");
+        }
+        if (req.url.startsWith("/post/")) {
+          const key = req.url.split("/")[2];
+          delete posts[key];
           res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
           return res.end("ok");
         }
