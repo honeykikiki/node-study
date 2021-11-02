@@ -46,6 +46,7 @@ http
             const id = Date.now();
             users[id] = name;
             res.writeHead(201, { "Content-Type": "text/plain; charset=utf-8" });
+            console.log(req, "req");
             res.end("ok");
           });
         }
