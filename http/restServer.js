@@ -20,6 +20,10 @@ http
             "Content-Type": "application/json; charset=utf-8",
           });
           return res.end(JSON.stringify(users));
+        } else if (req.url === "/profile") {
+          const data = await fs.readFile("./profile.html");
+          res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+          return res.end(data);
         }
         // /도 /about도 /users도 아니면
         try {

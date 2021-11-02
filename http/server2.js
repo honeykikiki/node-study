@@ -8,7 +8,7 @@ const server = http.createServer(async (req, res) => {
     res.end(date);
   } catch (error) {
     console.error(error);
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
     res.end(err.message);
   }
 });
