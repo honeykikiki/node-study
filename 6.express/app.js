@@ -8,10 +8,15 @@ app.use(
   (req, res, next) => {
     console.log("모든 요청에 실행하고싶어요");
     next();
+  },
+  (req, res, next) => {
+    try {
+      console.log(aaa);
+      // throw new Error("에러가 났어요");
+    } catch (error) {
+      next(error);
+    }
   }
-  // (req, res, next) => {
-  //   throw new Error("에러가 났어요");
-  // }
 );
 
 // about에서만 사용 가능한 미들 웨어
@@ -20,12 +25,26 @@ app.use(
 //   next();
 // });
 
+app.get(
+  "/",
+  (req, res, next) => {
+    // res.sendFile(path.join(__dirname, "index.html"));
+    // res.writeHead(200, { "Content-Type": "text/plain" });
+    // res.end("하이");
+    res.send("hello");
+    if (true) {
+      next("router");
+    } else {
+      next();
+    }
+  },
+  (req, res) => {
+    console.log("실행되나요?");
+  }
+);
+
 app.get("/", (req, res) => {
-  // res.sendFile(path.join(__dirname, "index.html"));
-  // res.writeHead(200, { "Content-Type": "text/plain" });
-  // res.end("하이");
-  res.send("hello");
-  // res.json({ hello: "honey" });
+  console.log("실행된다!");
 });
 
 app.get("/category/javascript", (req, res) => {
