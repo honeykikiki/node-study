@@ -14,6 +14,7 @@ const app = express();
 app.set("port", process.env.PORT || 3000);
 
 app.use(morgan("dev")); // 개발시 요청과 기록을 남기는 라이브러리
+// app.use(morgan("combined")); // 배포시 요청과 기록을 남기는 라이브러리
 // app.use((req, res, next) => {
 //   if (req.session.id) {
 //     express.static(path.join(__dirname, "public"));
@@ -22,7 +23,6 @@ app.use(morgan("dev")); // 개발시 요청과 기록을 남기는 라이브러�
 //   }
 // });
 app.use("/", express.static(path.join(__dirname, "public")));
-// app.use(morgan("combined")); // 배포시 요청과 기록을 남기는 라이브러리
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
   session({
