@@ -1,13 +1,13 @@
 const express = require("express");
-const { Post, User } = require("../models");
+const { Post, User, Hashtag } = require("../models");
 
 const router = express.Router();
 
 router.use((req, res, next) => {
   res.locals.user = req.user;
-  res.locals.followerCount = 0;
-  res.locals.followingCount = 0;
-  res.locals.followerIdList = [];
+  res.locals.followerCount = req.user ? req.user.Followers.length : 0;
+  res.locals.followingCount = req.user ? req.user.Followings.length : 0;
+  res.locals.followerIdList = req.user ? req.user.Followings.map((f) => f.id) : [];
   next();
 });
 
@@ -37,4 +37,51 @@ router.get("/", async (req, res, next) => {
     next(err);
   }
 });
+
+router.get("/hashtag", async (req, res, next) => {
+  const query = decodeURIComponent(req.query.hashtag);
+  console.log(query);
+  if (!query) {
+    return res.redirect("/");
+  }
+  try {
+    const hashtag = await Hashtag.findOne({ where: { title: query } });
+    let posts = [];
+    if (hashtag) {
+      posts = await hashtag.getPosts({ include: [{ model: User, attributes: ["id", "nick"] }] });
+    }
+
+    return res.render("main", {
+      title: `${query} | NodeBird`,
+      twits: posts,
+    });
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+});
+
+router.get("/hashtag/:hashtagText", async (req, res, next) => {
+  const query = decodeURIComponent(req.query.text);
+  console.log(query);
+  if (!query) {
+    return res.redirect("/");
+  }
+  try {
+    const hashtag = await Hashtag.findOne({ where: { title: query } });
+    let posts = [];
+    if (hashtag) {
+      posts = await hashtag.getPosts({ include: [{ model: User, attributes: ["id", "nick"] }] });
+    }
+    console.log(posts);
+    return res.render("main", {
+      title: `${query} | NodeBird`,
+      twits: posts,
+    });
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+});
+
 module.exports = router;

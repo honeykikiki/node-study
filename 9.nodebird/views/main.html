@@ -19,7 +19,7 @@
   </div>
   {% endif %}
   <div class="twits">
-    <form id="hashtag-form" action="/hashtag">
+    <form id="hashtag-form" action="/hashtag ">
       <input type="text" name="hashtag" placeholder="태그 검색" />
       <button class="btn">검색</button>
     </form>
@@ -47,7 +47,7 @@
       console.log(this, this.files);
       formData.append("img", this.files[0]);
       axios
-        .post("/post/img", formData)
+        .post(`/post/img`, formData)
         .then((res) => {
           document.getElementById("img-url").value = res.data.url;
           document.getElementById("img-preview").src = res.data.url;
@@ -56,6 +56,28 @@
         .catch((err) => {
           console.error(err);
         });
+    });
+  }
+  if (document.querySelector(".twit-content")) {
+    const hashtag = document.querySelectorAll(".twit-content");
+    hashtag.forEach((tag) => {
+      const hashtags = tag.innerText.match(/#[^\s#]*/g);
+      if (hashtags) {
+        tag.addEventListener("click", (e) => {
+          const hashtagText = e.target.innerText.split(" ")[0].slice(1);
+          console.log(hashtagText);
+          axios
+            .get(
+              `/hashtag/${encodeURIComponent(hashtagText)}?text=${encodeURIComponent(hashtagText)}`
+            )
+            .then((res) => {
+              console.log(res.data);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        });
+      }
     });
   }
   document.querySelectorAll(".twit-follow").forEach(function (tag) {
