@@ -65,14 +65,11 @@
       if (hashtags) {
         tag.addEventListener("click", (e) => {
           const hashtagText = e.target.innerText.split(" ")[0].slice(1);
-          console.log(hashtagText);
           axios
             .get(
               `/hashtag/${encodeURIComponent(hashtagText)}?text=${encodeURIComponent(hashtagText)}`
             )
-            .then((res) => {
-              console.log(res.data);
-            })
+            .then((res) => {})
             .catch((err) => {
               console.error(err);
             });
