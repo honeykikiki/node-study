@@ -48,7 +48,14 @@ router.get("/hashtag", async (req, res, next) => {
     const hashtag = await Hashtag.findOne({ where: { title: query } });
     let posts = [];
     if (hashtag) {
-      posts = await hashtag.getPosts({ include: [{ model: User, attributes: ["id", "nick"] }] });
+      posts = await hashtag.getPosts({
+        include: [
+          {
+            model: User,
+            attributes: ["id", "nick"],
+          },
+        ],
+      });
     }
 
     return res.render("main", {
@@ -62,7 +69,7 @@ router.get("/hashtag", async (req, res, next) => {
 });
 
 router.get("/hashtag/:hashtagText", async (req, res, next) => {
-  const query = decodeURIComponent(req.query.text);
+  const query = decodeURIComponent(req.query.hashtagText);
   console.log(query);
   if (!query) {
     return res.redirect("/");

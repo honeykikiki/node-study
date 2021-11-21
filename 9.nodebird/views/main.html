@@ -62,6 +62,7 @@
     const hashtag = document.querySelectorAll(".twit-content");
     hashtag.forEach((tag) => {
       const hashtags = tag.innerText.match(/#[^\s#]*/g);
+      console.log(tag);
       if (hashtags) {
         tag.addEventListener("click", (e) => {
           const hashtagText = e.target.innerText.split(" ")[0].slice(1);
