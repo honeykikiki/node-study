@@ -1,10 +1,33 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
+const url = require("url");
 
 const { verifyToken, apiLimiter } = require("./middlewares");
 const { Domain, User, Post, Hashtag } = require("../models");
 
 const router = express.Router();
+
+// router.use(
+//   cors({
+//     origin: "http://localhost:4000",
+//     credentials: true,
+//   })
+// );
+router.use(async (req, res, next) => {
+  const domain = await Domain.findAll({
+    // where: { host: url.parse(req.get("origin"))?.host },
+  });
+  console.log(domain, "domain");
+  if (domain) {
+    cors({
+      origin: "http://localhost:4000",
+      credentials: true,
+    })(req, res, next);
+  } else {
+    next();
+  }
+});
 
 router.post("/token", apiLimiter, async (req, res) => {
   const { clientSecret } = req.body;
@@ -33,6 +56,8 @@ router.post("/token", apiLimiter, async (req, res) => {
         issuer: "nodebird",
       }
     );
+    // res.setHeader("Access-Control-Allow-Origin", "localhost:4000");
+    // res.setHeader("Access-Control-Allow-Credentials", "localhost:4000");
     return res.json({
       code: 200,
       message: "토큰이 발급되었습니다",
@@ -54,7 +79,6 @@ router.get("/test", verifyToken, apiLimiter, (req, res) => {
 router.get("/posts/my", apiLimiter, verifyToken, (req, res) => {
   Post.findAll({ where: { userId: req.decoded.id } })
     .then((posts) => {
-      console.log(posts);
       res.json({
         code: 200,
         payload: posts,
